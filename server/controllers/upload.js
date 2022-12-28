@@ -1,29 +1,45 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.postUpload = void 0;
-const postUpload = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield res.status(201)
-            .setHeader("Content-Type", "application/json")
-            .json({
-            data: {
-                file: req.file,
-                files: req.files
-            }
-        });
+    // Upload
+    import multer, { diskStorage } from 'multer';
+
+    export default function Upload() {
+    
+    const arrivals = "assets/file";
+    const storage = diskStorage({
+                destination: (req, file, cb) => {
+                    cb(null, arrivals);
+                }, 
+                filename: (req, file, cb) => {
+                    cb(null, file.originalname);
+                }
+            });
+    
+    const FileFiltering =  (req, file, cb) => {
+        if (!file.originalname.match(/\.(txt|json|js|jsx|ts|tsx|py|cpp|c|vb|vbs|cs|java|php|css|sass|xml|html|md|pdf|docx|zip|rar|bat|cmd|ps1|sh|zsh)$/)) {
+            return cb(new Error('You can upload only specific file check, the documentation!'), false)
+        } else {
+            cb(null, true);
+        }
+    }    
+    
+    const upload = multer({ storage: storage, fileFilter: FileFiltering });
+    
+        return upload;
+      
     }
-    catch (error) {
-        next(error);
+    
+        // Controller 
+    export function postUpload(req, res) {
+            res.status(201).setHeader("Content-Type", "application/json").json(`File: ${req.file} or Files ${req.files} `);
     }
-});
-exports.postUpload = postUpload;
-//# sourceMappingURL=upload.js.map
+    
+    export function getUpload(_req, res, next) {
+            res.status(403).end("Oh my Bad!, Uploading file isn't supported on GET Operation! Try POST!");
+    }
+    
+    export function putUpload(_req, res, next) {
+        res.status(403).end("Oh my Bad!, Uploading file isn't supported on PUT Operation! Try POST!");
+    }
+    
+    export function deleteUpload(_req, res, next) {
+        res.status(403).end("Oh my Bad!, Uploading file isn't supported on DELETE Operation! Try POST!");
+    }

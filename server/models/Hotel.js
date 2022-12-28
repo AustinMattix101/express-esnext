@@ -1,32 +1,31 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = require("mongoose");
-const HotelSchema = new mongoose_1.Schema({
+import { Schema, model } from "mongoose";
+
+const HotelSchema = new Schema({
     name: {
         type: String,
         required: true,
     },
     type: {
-        type: String,
+        type: String, 
         required: true,
     },
     city: {
-        type: String,
+        type: String, 
         required: true,
     },
     address: {
-        type: String,
+        type: String, 
         required: true,
     },
     distance: {
-        type: String,
+        type: String, 
         required: true,
     },
     photos: {
-        type: [String],
+        type: [String], 
     },
     desc: {
-        type: String,
+        type: String, 
         required: true,
     },
     rating: {
@@ -35,7 +34,7 @@ const HotelSchema = new mongoose_1.Schema({
         max: 5,
     },
     rooms: {
-        type: [String],
+        type: [String], 
     },
     cheapestPrice: {
         type: Number,
@@ -46,10 +45,10 @@ const HotelSchema = new mongoose_1.Schema({
         default: false
     },
     postBy: {
-        type: String,
+        type:String,
         required: [true, " Please povide who post this hotel! "],
     },
-}, { timestamps: true });
-const Hotel = (0, mongoose_1.model)("Hotel", HotelSchema);
-exports.default = Hotel;
-//# sourceMappingURL=Hotel.js.map
+}, {timestamps: true});
+
+const Hotel = model("Hotel", HotelSchema);
+export default Hotel;

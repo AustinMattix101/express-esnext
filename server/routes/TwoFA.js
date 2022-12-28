@@ -1,38 +1,74 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const cors_1 = require("../middlewares/cors");
-const preferedTwoFA_1 = __importDefault(require("../middlewares/preferedTwoFA"));
-const auth_1 = require("../middlewares/auth");
-const init_1 = require("../middlewares/init");
-const TwoFA_1 = require("../controllers/TwoFA");
-const TwoFARouter = (0, express_1.Router)();
+import { Router } from "express";
+import { corsWithOptions } from "../middlewares/cors.js";
+import PreferedTwoFA from "../middlewares/preferedTwoFA.js";
+import { protect } from "../middlewares/auth.js";
+import { 
+        InitOnlyEmailConfirmation,
+        InitpreferedTwoFAOption
+    } from "../middlewares/init.js";
+import { 
+        getTwoFA,
+        getTwoFAOn,
+        getTwoFAOff,
+        postTwoFARegister, 
+        postTwoFAVerify, 
+        postTwoFAValidate, 
+} from "../controllers/TwoFA.js";
+
+const TwoFARouter = Router();
+
 TwoFARouter
-    .route("/")
-    .options(cors_1.corsWithOptions)
-    .get(TwoFA_1.getTwoFA);
+        .route("/")
+        .options(corsWithOptions)
+        .get(getTwoFA);
+
 TwoFARouter
-    .route("/on")
-    .options(cors_1.corsWithOptions)
-    .get(auth_1.protect, init_1.InitOnlyEmailConfirmation, TwoFA_1.getTwoFAOn);
+        .route("/on")
+        .options(corsWithOptions)
+        .get(
+                protect, 
+                InitOnlyEmailConfirmation, 
+                getTwoFAOn
+        );
+
 TwoFARouter
-    .route("/off")
-    .options(cors_1.corsWithOptions)
-    .get(auth_1.protect, init_1.InitOnlyEmailConfirmation, init_1.InitpreferedTwoFAOption, TwoFA_1.getTwoFAOff);
+        .route("/off")
+        .options(corsWithOptions)
+        .get(
+                protect, 
+                InitOnlyEmailConfirmation,
+                InitpreferedTwoFAOption,
+                getTwoFAOff
+        );
+
 TwoFARouter
-    .route("/generate")
-    .options(cors_1.corsWithOptions)
-    .post(auth_1.protect, init_1.InitOnlyEmailConfirmation, preferedTwoFA_1.default, TwoFA_1.postTwoFARegister);
+        .route("/generate")
+        .options(corsWithOptions)
+        .post(
+                protect, 
+                InitOnlyEmailConfirmation,
+                PreferedTwoFA, 
+                postTwoFARegister
+        );
+
 TwoFARouter
-    .route("/verify")
-    .options(cors_1.corsWithOptions)
-    .post(auth_1.protect, init_1.InitOnlyEmailConfirmation, preferedTwoFA_1.default, TwoFA_1.postTwoFAVerify);
+        .route("/verify")
+        .options(corsWithOptions)
+        .post(
+                protect,
+                InitOnlyEmailConfirmation,
+                PreferedTwoFA, 
+                postTwoFAVerify
+        );
+
 TwoFARouter
-    .route("/validate")
-    .options(cors_1.corsWithOptions)
-    .post(auth_1.protect, init_1.InitOnlyEmailConfirmation, preferedTwoFA_1.default, TwoFA_1.postTwoFAValidate);
-exports.default = TwoFARouter;
-//# sourceMappingURL=TwoFA.js.map
+        .route("/validate")
+        .options(corsWithOptions)
+        .post(
+                protect, 
+                InitOnlyEmailConfirmation,
+                PreferedTwoFA, 
+                postTwoFAValidate
+        );
+
+export default TwoFARouter;

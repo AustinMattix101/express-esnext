@@ -1,31 +1,87 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const uploadRouter = (0, express_1.Router)();
-const auth_1 = require("../middlewares/auth");
-const cors_1 = require("../middlewares/cors");
-const init_1 = require("../middlewares/init");
-const upload_1 = require("../controllers/upload");
-const upload_2 = require("../middlewares/upload");
+import { Router } from 'express';
+import { protect } from "../middlewares/auth.js";
+import { corsWithOptions } from "../middlewares/cors.js";
+import { 
+    InitOnlyEmailConfirmation,
+    InitpreferedTwoFAOption 
+} from "../middlewares/init.js";
+
+import Upload, { postUpload, getUpload, putUpload, deleteUpload } from "../controllers/upload.js";
+
+import UploadImg, { postUploadImg, getUploadImg, putUploadImg, deleteUploadImg } from "../controllers/uploadImg.js";
+
+const uploadRouter = Router();
+
+const key = "File";
+const upload = new Upload;
+
+const keyImg = "imageFile";
+const uploadImg = new UploadImg;
+
 uploadRouter
     .route('/')
-    .options(cors_1.corsWithOptions)
-    .post(auth_1.protect, init_1.InitOnlyEmailConfirmation, init_1.InitpreferedTwoFAOption, (0, upload_2.UploadFiles)('Files', 5), upload_1.postUpload);
+    .options(corsWithOptions)
+        .post(
+            protect,
+            InitOnlyEmailConfirmation, 
+            InitpreferedTwoFAOption, 
+            upload.single(key),
+            postUpload
+            )
+        
+        .get(
+            protect,
+            InitOnlyEmailConfirmation, 
+            InitpreferedTwoFAOption, 
+            getUpload, 
+            err => next(err)
+        )
+
+        .put(
+            protect, 
+            InitOnlyEmailConfirmation, 
+            InitpreferedTwoFAOption,
+            putUpload, 
+            err => next(err))
+
+        .delete(
+            protect, 
+            InitOnlyEmailConfirmation, 
+            InitpreferedTwoFAOption,
+            deleteUpload, 
+            err => next(err));
+
 uploadRouter
-    .route('/photo')
-    .options(cors_1.corsWithOptions)
-    .post(auth_1.protect, init_1.InitOnlyEmailConfirmation, init_1.InitpreferedTwoFAOption, (0, upload_2.UploadPhotos)('Photos', 5), upload_1.postUpload);
-uploadRouter
-    .route('/square')
-    .options(cors_1.corsWithOptions)
-    .post(auth_1.protect, init_1.InitOnlyEmailConfirmation, init_1.InitpreferedTwoFAOption, (0, upload_2.UploadSquare)('Squares', 5), upload_1.postUpload);
-uploadRouter
-    .route('/video')
-    .options(cors_1.corsWithOptions)
-    .post(auth_1.protect, init_1.InitOnlyEmailConfirmation, init_1.InitpreferedTwoFAOption, (0, upload_2.UploadVideos)('Videos', 5), upload_1.postUpload);
-uploadRouter
-    .route('/music')
-    .options(cors_1.corsWithOptions)
-    .post(auth_1.protect, init_1.InitOnlyEmailConfirmation, init_1.InitpreferedTwoFAOption, (0, upload_2.UploadMusic)('Music', 5), upload_1.postUpload);
-exports.default = uploadRouter;
-//# sourceMappingURL=uploadFile.js.map
+    .route('/img')
+    .options(corsWithOptions)
+        .post(
+            protect, 
+            InitOnlyEmailConfirmation,
+            InitpreferedTwoFAOption,
+            uploadImg.single(keyImg),
+            postUploadImg
+            )
+        
+        .get( 
+            protect, 
+            InitOnlyEmailConfirmation,
+            InitpreferedTwoFAOption,
+            getUploadImg, 
+            err => next(err)
+        )
+
+        .put( 
+            protect, 
+            InitOnlyEmailConfirmation,
+            InitpreferedTwoFAOption,
+            putUploadImg, 
+            err => next(err))
+
+        .delete( 
+            protect, 
+            InitOnlyEmailConfirmation,
+            InitpreferedTwoFAOption,
+            deleteUploadImg, 
+            err => next(err));
+
+export default uploadRouter;
